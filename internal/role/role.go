@@ -4,7 +4,12 @@ import "fmt"
 
 // NodeRole defines which functionality a Role should implement to create a functional cluster
 type NodeRole interface {
-	Role() RoleType
+	// GetRole returns which role this node will fulfill in the cluster
+	GetRole() RoleType
+	// GetCluster returns to which cluster a node belongs
+	GetCluster() string
+	// GetName returns the name of the node
+	GetName() string
 }
 
 // NewNodeWithRole creates a new NodeRole from given configuration

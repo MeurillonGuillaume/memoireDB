@@ -16,7 +16,7 @@ func main() {
 	if err != nil {
 		logrus.WithError(err).Fatal("Could not create NodeRole")
 	}
-	logrus.Infof("I am a cluster %s", node.Role())
+	logrus.Infof("I am a cluster %s with name %s and I belong to the cluster %s", node.GetRole(), node.GetName(), node.GetCluster())
 
 	_, err = communication.NewNodeCommunicator(&cfg.Communication)
 	if err != nil {
