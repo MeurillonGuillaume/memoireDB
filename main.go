@@ -16,4 +16,5 @@ func main() {
 		logrus.WithError(err).Fatal("Could not create NodeRole")
 	}
 	logrus.Infof("I am a cluster %s", node.Role())
+
 }
