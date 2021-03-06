@@ -1,6 +1,9 @@
 package main
 
-import "github.com/sirupsen/logrus"
+import (
+	"github.com/MeurillonGuillaume/memoireDB/internal/role"
+	"github.com/sirupsen/logrus"
+)
 
 func main() {
 	cfg, err := loadConfig()
@@ -8,5 +11,10 @@ func main() {
 		logrus.WithError(err).Fatal("Could not load configuration")
 	}
 
-	logrus.Info(cfg)
+	node, err := role.NewNodeWithRole(&cfg.Role)
+	if err != nil {
+		logrus.WithError(err).Fatal("Could not create NodeRole")
+	}
+	logrus.Infof("I am a cluster %s", node.Role())
+
 }

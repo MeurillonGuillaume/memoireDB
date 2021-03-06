@@ -11,5 +11,13 @@ Let's describe my wishes for memoireDB in a few simple keywords:
 - Distributed
 - Persisted
 - Customizable
+- Queries
+  - List keys matching pattern
+  - Hashmap values
+  - Get
+  - Put/Set & hashmap put / hashmap set
+  - Put with retention duration
+  - Delete
+  - Rename
 
 The goals of this project are subject to changes, but these are my goals for now.
