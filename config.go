@@ -1,13 +1,15 @@
 package main
 
 import (
+	"github.com/MeurillonGuillaume/memoireDB/internal/communication"
 	"github.com/MeurillonGuillaume/memoireDB/internal/role"
 	"github.com/koding/multiconfig"
 )
 
 // Config contains the configuration parameters used for memoireDB
 type Config struct {
-	Role role.Config
+	Role          role.Config
+	Communication communication.Config
 }
 
 // loadConfig will either load configuration parameters from ENV or crash out

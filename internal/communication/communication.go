@@ -6,3 +6,8 @@ type NodeCommunicator interface {
 	// PingAllNodes makes a ping request to every known node to verify that all nodes are available
 	PingAllNodes() error
 }
+
+// NewNodeCommunicator will create a new communicator to regulate communication between nodes
+func NewNodeCommunicator(cfg *Config) (NodeCommunicator, error) {
+	return nil, nil
+}
