@@ -1,5 +1,6 @@
 package role
 
+// RoleType is a String-type specifically used for Node RoleTypes
 type RoleType string
 
 // Public consts

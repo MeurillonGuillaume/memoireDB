@@ -2,7 +2,14 @@ package shared
 
 import (
 	"fmt"
+	"math/rand"
 	"os"
+	"strings"
+	"time"
+)
+
+var (
+	chars = []rune("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789")
 )
 
 type (
@@ -22,4 +29,14 @@ func SetEnvMap(m EnvMap) (err error) {
 		}
 	}
 	return nil
+}
+
+// NewRandomString will generate a random string using A-Z a-z 0-9 with given length
+func NewRandomString(length int) string {
+	rand.Seed(time.Now().UnixNano())
+	var b strings.Builder
+	for i := 0; i < length; i++ {
+		b.WriteRune(chars[rand.Intn(len(chars))])
+	}
+	return b.String()
 }

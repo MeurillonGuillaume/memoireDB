@@ -3,15 +3,14 @@ FROM golang:1.16 AS BUILDIMAGE
 
 # Fetch sourcecode
 WORKDIR /build
-COPY . /build
+COPY . .
 
 # Build binary
-RUN go mod download && \
-    go build -o memoireDB .
+RUN go get -v && \
+    go test -v ./... && \
+    go build .
 
 # Execute binary in empty env
 FROM scratch AS RUNTIME
-
 COPY --from=BUILDIMAGE /build/memoireDB .
-
-ENTRYPOINT [ "/memoireDB" ]
+ENTRYPOINT [ "memoireDB" ]
