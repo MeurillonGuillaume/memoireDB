@@ -1,16 +1,15 @@
-# Build binary in the official Go 1.16 runtime image
-FROM golang:1.16 AS BUILDIMAGE
-
-# Fetch sourcecode
-WORKDIR /build
+# Build binary in official Golang image
+FROM golang:1.16.0 AS builder
+WORKDIR /buildEnv
 COPY . .
-
-# Build binary
 RUN go get -v && \
     go test -v ./... && \
-    go build .
+    CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o memoireDB .
 
-# Execute binary in empty env
-FROM scratch AS RUNTIME
-COPY --from=BUILDIMAGE /build/memoireDB .
-ENTRYPOINT [ "memoireDB" ]
+# Use Alpine as runtime env
+FROM alpine:3.12
+RUN apk -U upgrade && \
+    apk --no-cache add ca-certificates
+WORKDIR /runtime
+COPY --from=builder /buildEnv/memoireDB .
+CMD ["./memoireDB"]
