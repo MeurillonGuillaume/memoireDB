@@ -12,7 +12,7 @@ type NodeCommunicator interface {
 // NewNodeCommunicator will create a new communicator to regulate communication between nodes
 func NewNodeCommunicator(cfg *Config) (nc NodeCommunicator, err error) {
 	switch cfg.Channel {
-	case GrpcNodeCommunicator:
+	case CommunicatorGrpc:
 		nc = newGrpcCommunicator(cfg)
 	default:
 		err = fmt.Errorf("could not create NodeCommunicator with unknown type %s", cfg.Channel)

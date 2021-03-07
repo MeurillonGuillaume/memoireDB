@@ -1,6 +1,6 @@
 package communication
 
 const (
-	// GrpcNodeCommunicator is a type of nodecommunicator which uses gRPC as communication channel
-	GrpcNodeCommunicator = "gRPC"
+	// CommunicatorGrpc is a type of nodecommunicator which uses gRPC as communication channel
+	CommunicatorGrpc = "gRPC"
 )
