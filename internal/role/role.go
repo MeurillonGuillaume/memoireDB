@@ -1,6 +1,9 @@
 package role
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 // NodeRole defines which functionality a Role should implement to create a functional cluster
 type NodeRole interface {
@@ -14,7 +17,7 @@ type NodeRole interface {
 
 // NewNodeWithRole creates a new NodeRole from given configuration
 func NewNodeWithRole(cfg *Config) (nr NodeRole, err error) {
-	switch RoleType(cfg.InitialNodeRole) {
+	switch RoleType(strings.ToLower(cfg.InitialNodeRole)) {
 	case ClusterLeader:
 		nr = newLeaderNode(cfg)
 	case ClusterFollower:

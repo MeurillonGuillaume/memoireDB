@@ -5,7 +5,8 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/MeurillonGuillaume/memoireDB/internal/communication"
+	externalCommunication "github.com/MeurillonGuillaume/memoireDB/external/communication"
+	internalCommunication "github.com/MeurillonGuillaume/memoireDB/internal/communication"
 	"github.com/MeurillonGuillaume/memoireDB/internal/role"
 	"github.com/sirupsen/logrus"
 )
@@ -25,11 +26,16 @@ func main() {
 	}
 	logrus.Infof("I am a cluster %s with name %s and I belong to the cluster %s", node.GetRole(), node.GetName(), node.GetCluster())
 
-	_, err = communication.NewNodeCommunicator(&cfg.Communication)
+	_, err = internalCommunication.NewNodeCommunicator(&cfg.InternalCommunication)
 	if err != nil {
 		logrus.WithError(err).Fatal("Could not create node communicator")
 	}
-	logrus.Info("Created communicator")
+	logrus.Info("Created internal node communicator")
+
+	_, err = externalCommunication.NewClientCommunicators(&cfg.ExternalCommunication)
+	if err != nil {
+		logrus.WithError(err).Fatal("Could not create client communicator")
+	}
 
 	logrus.WithField("signal", <-sigChan).Warn("Received exit signal")
 }
