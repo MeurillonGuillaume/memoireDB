@@ -1,6 +1,7 @@
 # memoireDB - A Go native distributed in-memory database
 
 [![Go Unit testing & Building](https://github.com/MeurillonGuillaume/memoireDB/actions/workflows/go-unit-build.yml/badge.svg)](https://github.com/MeurillonGuillaume/memoireDB/actions/workflows/go-unit-build.yml)
+[![Docker build](https://github.com/MeurillonGuillaume/memoireDB/actions/workflows/docker-build.yml/badge.svg)](https://github.com/MeurillonGuillaume/memoireDB/actions/workflows/docker-build.yml)
 [![Go Reference](https://pkg.go.dev/badge/github.com/MeurillonGuillaume/memoireDB.svg)](https://pkg.go.dev/github.com/MeurillonGuillaume/memoireDB)
 
 > Notice: This project is created as a hobby as educational purpose, and might or might not be abandoned in the future.
