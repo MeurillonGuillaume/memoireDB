@@ -1,9 +1,7 @@
 package communication
 
-import "github.com/MeurillonGuillaume/memoireDB/internal/operation"
-
 type httpCommunicator struct {
-	operationsChan chan operation.Operation
+	operationsChan chan interface{}
 }
 
 var _ ClientCommunicator = (*httpCommunicator)(nil)
@@ -16,6 +14,6 @@ func newHTTPCommunicator() ClientCommunicator {
 
 func (hc *httpCommunicator) init() {}
 
-func (hc *httpCommunicator) Operations() <-chan operation.Operation {
+func (hc *httpCommunicator) Operation() <-chan interface{} {
 	return hc.operationsChan
 }
