@@ -20,7 +20,7 @@ type (
 // SetEnvMap will assign multiple key-value pairs to the ENV variables
 func SetEnvMap(m EnvMap) (err error) {
 	if m == nil || len(m) < 1 {
-		return fmt.Errorf("Could not apply EnvMap, is nil or has no content")
+		return fmt.Errorf("could not apply EnvMap, is nil or has no content")
 	}
 
 	for envKey, envValue := range m {
