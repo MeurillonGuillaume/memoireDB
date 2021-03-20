@@ -1,7 +1,7 @@
 package main
 
 import (
-	"os"
+	"context"
 	"os/signal"
 	"syscall"
 
@@ -12,8 +12,8 @@ import (
 )
 
 func main() {
-	sigChan := make(chan os.Signal, 1)
-	signal.Notify(sigChan, syscall.SIGTERM, syscall.SIGINT)
+	ctx, cancel := signal.NotifyContext(context.Background(), syscall.SIGTERM, syscall.SIGINT)
+	defer cancel()
 
 	cfg, err := loadConfig()
 	if err != nil {
@@ -37,5 +37,6 @@ func main() {
 		logrus.WithError(err).Fatal("Could not create client communicator")
 	}
 
-	logrus.WithField("signal", <-sigChan).Warn("Received exit signal")
+	<-ctx.Done()
+	logrus.Warn("Received exit signal")
 }

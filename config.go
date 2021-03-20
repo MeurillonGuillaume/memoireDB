@@ -15,20 +15,19 @@ type Config struct {
 }
 
 // loadConfig will either load configuration parameters from ENV or crash out
-func loadConfig() (*Config, error) {
-	var cfg Config
+func loadConfig() (cfg Config, err error) {
 	configLoader := multiconfig.New()
 
 	// Load config
-	if err := configLoader.Load(&cfg); err != nil {
-		return nil, err
+	if err = configLoader.Load(&cfg); err != nil {
+		return
 	}
 
 	// Validate flags
-	if err := configLoader.Validate(&cfg); err != nil {
-		return nil, err
+	if err = configLoader.Validate(&cfg); err != nil {
+		return
 	}
 
 	cfg.Role.FillEmptyFields()
-	return &cfg, nil
+	return
 }
