@@ -1,0 +1,16 @@
+name: Golangci-lint
+
+on:
+  push:
+    paths-ignore:
+      - "*.md"
+  pull_request:
+    paths-ignore:
+      - "*.md"
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Run golangci-lint
+        uses: golangci/golangci-lint-action@v2.5.1

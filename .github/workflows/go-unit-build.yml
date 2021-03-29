@@ -6,25 +6,21 @@ on:
       - "*.md"
   pull_request:
     paths-ignore:
-    - "*.md"
+      - "*.md"
 
 jobs:
-
   build:
     runs-on: ubuntu-20.04
     steps:
-    - uses: actions/checkout@v2
+      - uses: actions/checkout@v2
 
-    - name: Set up Go
-      uses: actions/setup-go@v2
-      with:
-        go-version: 1.16
+      - name: Set up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.16
 
-    - name: Static code analysis
-      run: go get -v honnef.co/go/tools/cmd/staticcheck && ~/go/bin/staticcheck ./...
+      - name: Execute unit tests
+        run: go test -v ./...
 
-    - name: Execute unit tests
-      run: go test -v ./...
-
-    - name: Build application
-      run: go build -v .
+      - name: Build application
+        run: go build -v .
