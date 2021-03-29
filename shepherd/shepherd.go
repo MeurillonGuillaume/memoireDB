@@ -8,5 +8,9 @@ import (
 )
 
 type Shepherd interface {
-	Run(ctx context.Context, cc []exCommunication.ClientCommunicator, ic inCommunication.NodeCommunicator) error
+	Run(ctx context.Context) error
+}
+
+func NewShepherd(ic inCommunication.NodeCommunicator, ec []exCommunication.ClientCommunicator) (s Shepherd, err error) {
+	return newSimpleShepherd(ic, ec), nil
 }

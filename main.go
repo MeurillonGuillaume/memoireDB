@@ -8,6 +8,7 @@ import (
 	externalCommunication "github.com/MeurillonGuillaume/memoireDB/external/communication"
 	internalCommunication "github.com/MeurillonGuillaume/memoireDB/internal/communication"
 	"github.com/MeurillonGuillaume/memoireDB/internal/role"
+	"github.com/MeurillonGuillaume/memoireDB/shepherd"
 	"github.com/sirupsen/logrus"
 )
 
@@ -26,17 +27,32 @@ func main() {
 	}
 	logrus.Infof("I am a cluster %s with name %s and I belong to the cluster %s", node.GetRole(), node.GetName(), node.GetCluster())
 
-	_, err = internalCommunication.NewNodeCommunicator(&cfg.InternalCommunication)
+	ic, err := internalCommunication.NewNodeCommunicator(&cfg.InternalCommunication)
 	if err != nil {
 		logrus.WithError(err).Fatal("Could not create node communicator")
 	}
 	logrus.Info("Created internal node communicator")
 
-	_, err = externalCommunication.NewClientCommunicators(&cfg.ExternalCommunication)
+	ecs, err := externalCommunication.NewClientCommunicators(&cfg.ExternalCommunication)
 	if err != nil {
 		logrus.WithError(err).Fatal("Could not create client communicator")
 	}
+	defer func() {
+		for _, ec := range ecs {
+			if err := ec.Close(); err != nil {
+				logrus.WithError(err).Error("Could not close client communicator")
+			}
+		}
+	}()
 
-	<-ctx.Done()
+	shepherd, err := shepherd.NewShepherd(ic, ecs)
+	if err != nil {
+		logrus.WithError(err).Fatal("Could not create shepherd")
+	}
+
+	if err := shepherd.Run(ctx); err != nil {
+		logrus.WithError(err).Error("Could not execute shepherd")
+	}
+
 	logrus.Warn("Received exit signal")
 }
