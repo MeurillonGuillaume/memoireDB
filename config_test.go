@@ -18,11 +18,12 @@ func TestConfigLoading(t *testing.T) {
 	var cfg Config
 	configLoader := multiconfig.New()
 
-	shared.SetEnvMap(shared.EnvMap{
+	err := shared.SetEnvMap(shared.EnvMap{
 		"CONFIG_ROLE_NODENAME":        _myTestNodeName,
 		"CONFIG_ROLE_CLUSTERNAME":     _myTestClusterName,
 		"CONFIG_ROLE_INITIALNODEROLE": "leader",
 	})
+	assert.NoError(t, err)
 	assert.Nil(t, configLoader.Load(&cfg))
 	assert.Nil(t, configLoader.Validate(&cfg))
 	assert.Equal(t, _myTestNodeName, cfg.Role.NodeName)
