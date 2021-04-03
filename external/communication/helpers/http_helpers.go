@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
+	"github.com/sirupsen/logrus"
 )
 
 // Route is an object used to create a HTTP routing object
@@ -19,7 +20,7 @@ type Route struct {
 func NewHTTPServer(port int, routes []Route) *http.Server {
 	router := mux.NewRouter()
 	for _, route := range routes {
-		router.Name(route.Name).Path(route.Path).Methods(route.Methods...).HandlerFunc(route.Handler)
+		router.Name(route.Name).Path(route.Path).Methods(route.Methods...).HandlerFunc(addRouteLogging(route.Handler))
 	}
 	return &http.Server{
 		Addr:    fmt.Sprintf(":%d", port),
@@ -27,7 +28,11 @@ func NewHTTPServer(port int, routes []Route) *http.Server {
 	}
 }
 
-// func AddRouteLogging(in http.HandlerFunc) (out http.HandlerFunc) {
-// 	// TODO: add route logging overlay
-// 	return
-// }
+// addRouteLogging adds a route logline to a HTTP HandlerFunc
+func addRouteLogging(in http.HandlerFunc) (out http.HandlerFunc) {
+	out = func(rw http.ResponseWriter, r *http.Request) {
+		logrus.Infof("Received HTTP %s request at route %s from %s", r.Method, r.URL.Path, r.RemoteAddr)
+		in(rw, r)
+	}
+	return
+}
