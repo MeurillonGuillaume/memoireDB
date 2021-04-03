@@ -44,7 +44,7 @@ func TestHTTPRouter(t *testing.T) {
 			assert.NoError(t, err)
 		}
 	}()
-	awaitOnline(fmt.Sprintf("http://localhost:%d", port))
+	awaitOnline(t, fmt.Sprintf("http://localhost:%d", port))
 }
 
 func testingHTTPHandler(rw http.ResponseWriter, r *http.Request) {
@@ -55,12 +55,23 @@ func testingHTTPHandler(rw http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func awaitOnline(serverAddr string) {
+func awaitOnline(t *testing.T, serverAddr string) {
 	var (
-		err = errors.New("i could fail for a while")
+		err         = errors.New("i could fail for a while")
+		ctx, cancel = context.WithTimeout(context.Background(), 30*time.Second)
 	)
+	defer cancel()
 
 	for err != nil {
-		_, err = http.Get(serverAddr)
+		select {
+		case <-ctx.Done():
+			t.Fatal("Service still not online, context timeout exceeded")
+		default:
+			resp, e := http.Get(serverAddr)
+			if resp != nil && resp.Body != nil {
+				assert.NoError(t, resp.Body.Close())
+			}
+			err = e
+		}
 	}
 }
