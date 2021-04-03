@@ -2,9 +2,11 @@ package shepherd
 
 import (
 	"context"
+	"fmt"
 
 	exCommunication "github.com/MeurillonGuillaume/memoireDB/external/communication"
 	inCommunication "github.com/MeurillonGuillaume/memoireDB/internal/communication"
+	"github.com/MeurillonGuillaume/memoireDB/internal/operation"
 	"github.com/MeurillonGuillaume/memoireDB/shared"
 	"github.com/sirupsen/logrus"
 )
@@ -34,7 +36,13 @@ func (ss *simpleShepherd) Run(ctx context.Context) error {
 		case <-ctx.Done():
 			return nil
 		case item := <-combinedChan:
-			logrus.WithField("op", item).Info("Received an operation")
+			op, ok := item.(operation.Operation)
+			if ok {
+				logrus.WithField("op", item).Info("Received an operation")
+				op.Start()
+			} else {
+				logrus.WithFields(logrus.Fields{"item": item, "type": fmt.Sprintf("%T", item)}).Error("Received unknown action")
+			}
 		}
 	}
 }

@@ -29,7 +29,8 @@ type (
 )
 
 const (
-	_statusOk = "ok"
+	_statusOk  = "Operation succeeded"
+	_statusNok = "Operation failed"
 )
 
 var _ ClientCommunicator = (*httpCommunicator)(nil)
@@ -95,6 +96,12 @@ func (hc *httpCommunicator) getRoutes() []helpers.Route {
 			Methods: []string{http.MethodPost},
 			Handler: hc.putHandler,
 		},
+		{
+			Name:    "Retrieve key-value pair",
+			Path:    "/retrieve",
+			Methods: []string{http.MethodPost},
+			Handler: hc.getHandler,
+		},
 	}
 }
 
@@ -122,7 +129,7 @@ func (hc *httpCommunicator) putHandler(rw http.ResponseWriter, r *http.Request) 
 	var insertRequest model.InsertModel
 	dec := json.NewDecoder(r.Body)
 	if err := dec.Decode(&insertRequest); err != nil {
-		logrus.WithError(err).Error("Could not decode put request data")
+		logrus.WithError(err).Error("Could not decode insert request data")
 		http.Error(rw, "Could not properly decode Insert model", http.StatusBadRequest)
 		return
 	}
@@ -130,16 +137,61 @@ func (hc *httpCommunicator) putHandler(rw http.ResponseWriter, r *http.Request) 
 	// Create an operation and pass it to the internal handler
 	op := operation.NewInsertOperation(insertRequest)
 	hc.operationsChan <- op
-	op.Start()
+
 	// Wait for the operation to complete
 	op.Wait()
-	if err := op.Result(); err != nil {
-
+	if result, err := op.Result(); err != nil {
+		helpers.HTTPReplyJSON(rw, http.StatusOK, model.SimpleResponse{
+			Result:  _statusNok,
+			Message: "Insert failed",
+			Error:   err.Error(),
+			Took:    time.Since(start).Milliseconds(),
+		})
 	} else {
 		helpers.HTTPReplyJSON(rw, http.StatusOK, model.SimpleResponse{
 			Result:  _statusOk,
 			Message: "Insert successful",
+			Value:   result,
 			Took:    time.Since(start).Milliseconds(),
+		})
+	}
+}
+
+func (hc *httpCommunicator) getHandler(rw http.ResponseWriter, r *http.Request) {
+	start := time.Now()
+
+	hc.wg.Add(1)
+	defer func() {
+		hc.wg.Done()
+		if err := r.Body.Close(); err != nil {
+			logrus.WithError(err).Error("Could not properly close request body")
+		}
+	}()
+
+	var retrieveRequest model.RetrieveModel
+	dec := json.NewDecoder(r.Body)
+	if err := dec.Decode(&retrieveRequest); err != nil {
+		logrus.WithError(err).Error("Could not decode retrieve request data")
+		http.Error(rw, "Could not properly decode Retrieve model", http.StatusBadRequest)
+		return
+	}
+
+	op := operation.NewRetrieveOperation(retrieveRequest)
+	hc.operationsChan <- op
+
+	op.Wait()
+	if result, err := op.Result(); err != nil {
+		helpers.HTTPReplyJSON(rw, http.StatusOK, model.SimpleResponse{
+			Result:  _statusOk,
+			Message: "Insert successful",
+			Error:   err.Error(),
+			Took:    time.Since(start).Milliseconds(),
+		})
+	} else {
+		helpers.HTTPReplyJSON(rw, http.StatusOK, model.RetrieveResponse{
+			Key:   retrieveRequest.Key,
+			Value: result,
+			Took:  time.Since(start).Milliseconds(),
 		})
 	}
 }

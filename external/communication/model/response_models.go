@@ -6,10 +6,17 @@ type (
 		Message string `json:"message"`
 	}
 
-	// SimpleResponse
 	SimpleResponse struct {
-		Result  string `json:"result,omitempty"`
-		Message string `json:"message,omitempty"`
-		Took    int64  `json:"took,omitempty"`
+		Result  string      `json:"result"`
+		Value   interface{} `json:"value"`
+		Message string      `json:"message,omitempty"`
+		Error   string      `json:"error,omitempty"`
+		Took    int64       `json:"took"`
+	}
+
+	RetrieveResponse struct {
+		Key   string      `json:"key"`
+		Value interface{} `json:"value"`
+		Took  int64       `json:"took"`
 	}
 )
