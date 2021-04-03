@@ -26,3 +26,8 @@ func NewHTTPServer(port int, routes []Route) *http.Server {
 		Handler: router,
 	}
 }
+
+// func AddRouteLogging(in http.HandlerFunc) (out http.HandlerFunc) {
+// 	// TODO: add route logging overlay
+// 	return
+// }

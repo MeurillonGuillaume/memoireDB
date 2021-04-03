@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"sync"
 
+	"github.com/MeurillonGuillaume/memoireDB/external/communication/helpers"
 	"github.com/koding/multiconfig"
 	"github.com/sirupsen/logrus"
 )
@@ -36,15 +37,15 @@ func newHTTPCommunicator() (cc ClientCommunicator, err error) {
 		return
 	}
 
-	server := new(http.Server)
-	server.Addr = fmt.Sprintf(":%d", cfg.Port)
-
-	cc = &httpCommunicator{
+	hc := httpCommunicator{
 		operationsChan: make(chan interface{}, 1),
 		cfg:            &cfg,
-		server:         server,
 	}
-	return
+
+	server := new(http.Server)
+	server.Addr = fmt.Sprintf(":%d", cfg.Port)
+	hc.server = helpers.NewHTTPServer(cfg.Port, hc.getRoutes())
+	return &hc, nil
 }
 
 func (hc *httpCommunicator) Run(ctx context.Context) {
@@ -69,4 +70,25 @@ func (hc *httpCommunicator) Close() error {
 	hc.wg.Wait()
 	close(hc.operationsChan)
 	return nil
+}
+
+func (hc *httpCommunicator) getRoutes() []helpers.Route {
+	return []helpers.Route{
+		{
+			Name:    "Cluster Status",
+			Path:    "/cluster/status",
+			Methods: []string{http.MethodGet},
+			Handler: hc.statusHandler,
+		},
+	}
+}
+
+func (hc *httpCommunicator) statusHandler(rw http.ResponseWriter, r *http.Request) {
+	hc.wg.Add(1)
+	defer hc.wg.Done()
+
+	rw.WriteHeader(http.StatusOK)
+	if _, err := rw.Write([]byte("Online")); err != nil {
+		logrus.WithError(err).Error("Could not write HTTP response to client")
+	}
 }
