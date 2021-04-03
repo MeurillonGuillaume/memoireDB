@@ -53,7 +53,7 @@ func (hc *httpCommunicator) Run(ctx context.Context) {
 		if err := hc.server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			logrus.WithError(err).Error("Can no longer serve external HTTP requests")
 		} else {
-			logrus.Info("Received gracefull shutdown command for external HTTP client communicator")
+			logrus.Info("Received graceful shutdown command for external HTTP client communicator")
 		}
 	}()
 	<-ctx.Done()
