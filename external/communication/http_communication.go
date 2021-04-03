@@ -7,6 +7,7 @@ import (
 	"sync"
 
 	"github.com/MeurillonGuillaume/memoireDB/external/communication/helpers"
+	"github.com/MeurillonGuillaume/memoireDB/external/communication/model"
 	"github.com/koding/multiconfig"
 	"github.com/sirupsen/logrus"
 )
@@ -76,19 +77,19 @@ func (hc *httpCommunicator) getRoutes() []helpers.Route {
 	return []helpers.Route{
 		{
 			Name:    "Cluster Status",
-			Path:    "/cluster/status",
+			Path:    "/node/status",
 			Methods: []string{http.MethodGet},
 			Handler: hc.statusHandler,
 		},
 	}
 }
 
+// statusHandler is a simple HTTP responsewriter to display the current status to a requester
 func (hc *httpCommunicator) statusHandler(rw http.ResponseWriter, r *http.Request) {
 	hc.wg.Add(1)
 	defer hc.wg.Done()
 
-	rw.WriteHeader(http.StatusOK)
-	if _, err := rw.Write([]byte("Online")); err != nil {
-		logrus.WithError(err).Error("Could not write HTTP response to client")
-	}
+	helpers.HTTPReplyJSON(rw, http.StatusOK, model.StatusResponse{
+		Message: "I'm online!",
+	})
 }
