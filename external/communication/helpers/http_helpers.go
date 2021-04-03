@@ -29,10 +29,9 @@ func NewHTTPServer(port int, routes []Route) *http.Server {
 }
 
 // addRouteLogging adds a route logline to a HTTP HandlerFunc
-func addRouteLogging(in http.HandlerFunc) (out http.HandlerFunc) {
-	out = func(rw http.ResponseWriter, r *http.Request) {
+func addRouteLogging(in http.HandlerFunc) http.HandlerFunc {
+	return func(rw http.ResponseWriter, r *http.Request) {
 		logrus.Infof("Received HTTP %s request at route %s from %s", r.Method, r.URL.Path, r.RemoteAddr)
 		in(rw, r)
 	}
-	return
 }
