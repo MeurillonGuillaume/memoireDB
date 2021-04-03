@@ -53,8 +53,7 @@ func HTTPReplyJSON(rw http.ResponseWriter, statusCode int, body interface{}) {
 
 	rw.WriteHeader(statusCode)
 	rw.Header().Add(_contentType, _appJson)
-	_, err = rw.Write(rawReply)
-	if err != nil {
+	if _, err = rw.Write(rawReply); err != nil {
 		logrus.WithError(err).Error("Could not write response to client")
 		http.Error(rw, "Actual response could not be written", http.StatusInternalServerError)
 		return

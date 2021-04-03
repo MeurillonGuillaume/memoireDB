@@ -2,27 +2,35 @@ package communication
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"sync"
+	"time"
 
 	"github.com/MeurillonGuillaume/memoireDB/external/communication/helpers"
 	"github.com/MeurillonGuillaume/memoireDB/external/communication/model"
+	"github.com/MeurillonGuillaume/memoireDB/internal/operation"
 	"github.com/koding/multiconfig"
 	"github.com/sirupsen/logrus"
 )
 
-// HttpCommunicatorConfig contains configuration parameters to set up a HTTP server
-type HttpCommunicatorConfig struct {
-	Port int `default:"8080" flagUsage:"Which port should be used to listen for incoming HTTP requests"`
-}
+type (
+	// HttpCommunicatorConfig contains configuration parameters to set up a HTTP server
+	HttpCommunicatorConfig struct {
+		Port int `default:"8080" flagUsage:"Which port should be used to listen for incoming HTTP requests"`
+	}
+	httpCommunicator struct {
+		cfg            *HttpCommunicatorConfig
+		operationsChan chan interface{}
+		server         *http.Server
+		wg             sync.WaitGroup
+	}
+)
 
-type httpCommunicator struct {
-	cfg            *HttpCommunicatorConfig
-	operationsChan chan interface{}
-	server         *http.Server
-	wg             sync.WaitGroup
-}
+const (
+	_statusOk = "ok"
+)
 
 var _ ClientCommunicator = (*httpCommunicator)(nil)
 
@@ -81,6 +89,12 @@ func (hc *httpCommunicator) getRoutes() []helpers.Route {
 			Methods: []string{http.MethodGet},
 			Handler: hc.statusHandler,
 		},
+		{
+			Name:    "Insert key-value pair",
+			Path:    "/insert",
+			Methods: []string{http.MethodPost},
+			Handler: hc.putHandler,
+		},
 	}
 }
 
@@ -92,4 +106,40 @@ func (hc *httpCommunicator) statusHandler(rw http.ResponseWriter, r *http.Reques
 	helpers.HTTPReplyJSON(rw, http.StatusOK, model.StatusResponse{
 		Message: "I'm online!",
 	})
+}
+
+func (hc *httpCommunicator) putHandler(rw http.ResponseWriter, r *http.Request) {
+	start := time.Now()
+
+	hc.wg.Add(1)
+	defer func() {
+		hc.wg.Done()
+		if err := r.Body.Close(); err != nil {
+			logrus.WithError(err).Error("Could not properly close request body")
+		}
+	}()
+
+	var insertRequest model.InsertModel
+	dec := json.NewDecoder(r.Body)
+	if err := dec.Decode(&insertRequest); err != nil {
+		logrus.WithError(err).Error("Could not decode put request data")
+		http.Error(rw, "Could not properly decode Insert model", http.StatusBadRequest)
+		return
+	}
+
+	// Create an operation and pass it to the internal handler
+	op := operation.NewInsertOperation(insertRequest)
+	hc.operationsChan <- op
+	op.Start()
+	// Wait for the operation to complete
+	op.Wait()
+	if err := op.Result(); err != nil {
+
+	} else {
+		helpers.HTTPReplyJSON(rw, http.StatusOK, model.SimpleResponse{
+			Result:  _statusOk,
+			Message: "Insert successful",
+			Took:    time.Since(start).Milliseconds(),
+		})
+	}
 }

@@ -34,7 +34,7 @@ func (ss *simpleShepherd) Run(ctx context.Context) error {
 		case <-ctx.Done():
 			return nil
 		case item := <-combinedChan:
-			logrus.Info(item)
+			logrus.WithField("op", item).Info("Received an operation")
 		}
 	}
 }
