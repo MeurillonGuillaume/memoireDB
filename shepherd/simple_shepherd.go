@@ -24,6 +24,10 @@ func newSimpleShepherd(ic inCommunication.NodeCommunicator, ecs []exCommunicatio
 var _ Shepherd = (*simpleShepherd)(nil)
 
 func (ss *simpleShepherd) Run(ctx context.Context) error {
+	for _, ec := range ss.externalCommunicators {
+		go ec.Run(ctx)
+	}
+
 	combinedChan := shared.CombineChans(ctx, exCommunication.GetCommunicatorChans(ss.externalCommunicators)...)
 	for {
 		select {

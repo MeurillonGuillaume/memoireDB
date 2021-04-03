@@ -1,12 +1,15 @@
 package communication
 
 import (
+	"context"
 	"fmt"
 	"strings"
 )
 
 // ClientCommunicator is an interface declaring the functionality of a communicator for client - server communication
 type ClientCommunicator interface {
+	// Run will keep the ClientCommunicator alive as long as the context is unclosed
+	Run(ctx context.Context)
 	// Operation will expose the internal channel for operations
 	Operation() <-chan interface{}
 	// Close will close the clientcommunicator and handle all operations in state
@@ -23,7 +26,11 @@ func NewClientCommunicators(cfg *Config) (cc []ClientCommunicator, err error) {
 	for _, method := range cfg.Methods {
 		switch strings.ToLower(method) {
 		case MethodHTTPCommunicator:
-			cc = append(cc, newHTTPCommunicator())
+			hc, err := newHTTPCommunicator()
+			if err != nil {
+				return cc, err
+			}
+			cc = append(cc, hc)
 		default:
 			err = fmt.Errorf("could not configure ClientCommunicator of unknown type %s", method)
 			return
