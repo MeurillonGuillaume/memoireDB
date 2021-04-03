@@ -14,33 +14,37 @@ func TestCombineChans(t *testing.T) {
 	floatStream := make(chan interface{})
 
 	go func() {
-		var i int
-		for {
-			select {
-			case <-ctx.Done():
-				return
-			default:
-				intStream <- i
-			}
-			i++
-		}
-	}()
-
-	go func() {
-		var i float64
-		for {
+		for i := 0; i < 10; i++ {
 			select {
 			case <-ctx.Done():
 				return
 			default:
 				floatStream <- i
 			}
-			i++
+		}
+	}()
+
+	go func() {
+		for i := 0; i < 10; i++ {
+			select {
+			case <-ctx.Done():
+				return
+			default:
+				floatStream <- float64(i)
+			}
 		}
 	}()
 
 	outStream := CombineChans(ctx, intStream, floatStream)
 	for item := range outStream {
-		t.Log(item)
+		switch item.(type) {
+		case int:
+			t.Logf("%d (%T)", item, item)
+		case float64:
+			t.Logf("%f (%T)", item, item)
+		default:
+			t.Fatalf("Got unexpected item %v of type %T", item, item)
+		}
+
 	}
 }
