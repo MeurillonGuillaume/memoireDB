@@ -11,12 +11,18 @@ type (
 		Value   interface{} `json:"value,omitempty"`
 		Message string      `json:"message,omitempty"`
 		Error   string      `json:"error,omitempty"`
-		Took    int64       `json:"took"`
+		Took    int64       `json:"tookNs"`
 	}
 
 	RetrieveResponse struct {
 		Key   string      `json:"key"`
 		Value interface{} `json:"value"`
-		Took  int64       `json:"took"`
+		Took  int64       `json:"tookNs"`
+	}
+
+	ListKeysResponse struct {
+		Prefix string      `json:"prefix,omitempty"`
+		Keys   interface{} `json:"keys"`
+		Took   int64       `json:"tookNs"`
 	}
 )

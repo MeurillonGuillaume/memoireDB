@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"sync"
 	"time"
@@ -102,6 +103,12 @@ func (hc *httpCommunicator) getRoutes() []helpers.Route {
 			Methods: []string{http.MethodPost},
 			Handler: hc.getHandler,
 		},
+		{
+			Name:    "List keys with optional prefix",
+			Path:    "/list",
+			Methods: []string{http.MethodPost},
+			Handler: hc.listHandler,
+		},
 	}
 }
 
@@ -130,18 +137,22 @@ func (hc *httpCommunicator) putHandler(rw http.ResponseWriter, r *http.Request) 
 	dec := json.NewDecoder(r.Body)
 	if err := dec.Decode(&insertRequest); err != nil {
 		logrus.WithError(err).Error("Could not decode insert request data")
-		http.Error(rw, "Could not properly decode Insert model", http.StatusBadRequest)
+		helpers.HTTPReplyJSON(rw, http.StatusBadRequest, model.SimpleResponse{
+			Result:  _statusNok,
+			Message: "Retrieve failed",
+			Error:   "Could not properly decode insert model",
+			Took:    time.Since(start).Nanoseconds(),
+		})
 		return
 	}
 
 	// Create an operation and pass it to the internal handler
 	op := operation.NewInsertOperation(insertRequest)
 	hc.operationsChan <- op
-
-	// Wait for the operation to complete
 	op.Wait()
+
 	if result, err := op.Result(); err != nil {
-		helpers.HTTPReplyJSON(rw, http.StatusOK, model.SimpleResponse{
+		helpers.HTTPReplyJSON(rw, http.StatusBadRequest, model.SimpleResponse{
 			Result:  _statusNok,
 			Message: "Insert failed",
 			Error:   err.Error(),
@@ -172,17 +183,22 @@ func (hc *httpCommunicator) getHandler(rw http.ResponseWriter, r *http.Request) 
 	dec := json.NewDecoder(r.Body)
 	if err := dec.Decode(&retrieveRequest); err != nil {
 		logrus.WithError(err).Error("Could not decode retrieve request data")
-		http.Error(rw, "Could not properly decode Retrieve model", http.StatusBadRequest)
+		helpers.HTTPReplyJSON(rw, http.StatusBadRequest, model.SimpleResponse{
+			Result:  _statusOk,
+			Message: "Retrieve failed",
+			Error:   "Could not properly decode retrieve model",
+			Took:    time.Since(start).Nanoseconds(),
+		})
 		return
 	}
 
 	op := operation.NewRetrieveOperation(retrieveRequest)
 	hc.operationsChan <- op
-
 	op.Wait()
+
 	if result, err := op.Result(); err != nil {
-		helpers.HTTPReplyJSON(rw, http.StatusOK, model.SimpleResponse{
-			Result:  _statusOk,
+		helpers.HTTPReplyJSON(rw, http.StatusBadRequest, model.SimpleResponse{
+			Result:  _statusNok,
 			Message: "Retrieve failed",
 			Error:   err.Error(),
 			Took:    time.Since(start).Nanoseconds(),
@@ -192,6 +208,50 @@ func (hc *httpCommunicator) getHandler(rw http.ResponseWriter, r *http.Request) 
 			Key:   retrieveRequest.Key,
 			Value: result,
 			Took:  time.Since(start).Nanoseconds(),
+		})
+	}
+}
+
+func (hc *httpCommunicator) listHandler(rw http.ResponseWriter, r *http.Request) {
+	start := time.Now()
+
+	hc.wg.Add(1)
+	defer func() {
+		hc.wg.Done()
+		if err := r.Body.Close(); err != nil {
+			logrus.WithError(err).Error("Could not properly close request body")
+		}
+	}()
+
+	var listModel model.ListKeyModel
+	dec := json.NewDecoder(r.Body)
+	if err := dec.Decode(&listModel); err != nil && err != io.EOF {
+		logrus.WithError(err).Error("Could not decode list request")
+		helpers.HTTPReplyJSON(rw, http.StatusBadRequest, model.SimpleResponse{
+			Result:  _statusOk,
+			Message: "List keys failed",
+			Error:   "Could not properly decode list key(s) model",
+			Took:    time.Since(start).Nanoseconds(),
+		})
+		return
+	}
+
+	op := operation.NewListOperation(listModel)
+	hc.operationsChan <- op
+	op.Wait()
+
+	if result, err := op.Result(); err != nil {
+		helpers.HTTPReplyJSON(rw, http.StatusBadRequest, model.SimpleResponse{
+			Result:  _statusNok,
+			Message: "List keys failed",
+			Error:   err.Error(),
+			Took:    time.Since(start).Nanoseconds(),
+		})
+	} else {
+		helpers.HTTPReplyJSON(rw, http.StatusOK, model.ListKeysResponse{
+			Prefix: listModel.Prefix,
+			Keys:   result,
+			Took:   time.Since(start).Nanoseconds(),
 		})
 	}
 }

@@ -11,4 +11,9 @@ type (
 	RetrieveModel struct {
 		Key string `json:"key"`
 	}
+
+	// ListKeyModel is a model used to accept incoming List Key requests with optional prefixes
+	ListKeyModel struct {
+		Prefix string `json:"prefix,omitempty"`
+	}
 )
