@@ -1,6 +1,6 @@
 package role
 
-// leader is a type of NodeRole which is assigned to orchestrate what happens in the cluster
+// leader is a type of NodeRole which is assigned to orchestrate what happens in the cluster.
 type leader struct {
 	cfg         *Config
 	currentRole RoleType

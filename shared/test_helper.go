@@ -13,11 +13,11 @@ var (
 )
 
 type (
-	// EnvMap is a type of string-string map to simplify the applying of multiple key:value pairs for ENV
+	// EnvMap is a type of string-string map to simplify the applying of multiple key:value pairs for ENV.
 	EnvMap map[string]string
 )
 
-// SetEnvMap will assign multiple key-value pairs to the ENV variables
+// SetEnvMap will assign multiple key-value pairs to the ENV variables.
 func SetEnvMap(m EnvMap) (err error) {
 	if m == nil || len(m) < 1 {
 		return fmt.Errorf("could not apply EnvMap, is nil or has no content")
@@ -31,7 +31,7 @@ func SetEnvMap(m EnvMap) (err error) {
 	return nil
 }
 
-// NewRandomString will generate a random string using A-Z a-z 0-9 with given length
+// NewRandomString will generate a random string using A-Z a-z 0-9 with given length.
 func NewRandomString(length int) string {
 	rand.Seed(time.Now().UnixNano())
 	var b strings.Builder

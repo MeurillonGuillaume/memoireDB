@@ -1,7 +1,7 @@
 package model
 
 type (
-	// StatusResponse is an object to return the current status to a requester
+	// StatusResponse is an object to return the current status to a requester.
 	StatusResponse struct {
 		Message string `json:"message"`
 	}

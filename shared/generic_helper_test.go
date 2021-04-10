@@ -45,6 +45,5 @@ func TestCombineChans(t *testing.T) {
 		default:
 			t.Fatalf("Got unexpected item %v of type %T", item, item)
 		}
-
 	}
 }

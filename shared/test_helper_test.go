@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-// TestSetEnvMap will ensure the SetEnvMap func is working as intended
+// TestSetEnvMap will ensure the SetEnvMap func is working as intended.
 func TestSetEnvMap(t *testing.T) {
 	envs := EnvMap{
 		"key":       "value",

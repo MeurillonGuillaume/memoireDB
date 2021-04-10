@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-// TestNewNodeName will assure a new nodename is never empty
+// TestNewNodeName will assure a new nodename is never empty.
 func TestNewNodeName(t *testing.T) {
 	for i := 0; i < 100000; i++ {
 		name := newNodeName()

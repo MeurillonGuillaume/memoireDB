@@ -3,6 +3,7 @@ package communication
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -17,7 +18,7 @@ import (
 )
 
 type (
-	// HttpCommunicatorConfig contains configuration parameters to set up a HTTP server
+	// HttpCommunicatorConfig contains configuration parameters to set up a HTTP server.
 	HttpCommunicatorConfig struct {
 		Port int `default:"8080" flagUsage:"Which port should be used to listen for incoming HTTP requests"`
 	}
@@ -62,7 +63,7 @@ func newHTTPCommunicator() (cc ClientCommunicator, err error) {
 func (hc *httpCommunicator) Run(ctx context.Context) {
 	go func() {
 		logrus.WithField("HTTP port", hc.cfg.Port).Info("HTTP Client communicator is ready to serve requests")
-		if err := hc.server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+		if err := hc.server.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 			logrus.WithError(err).Error("Can no longer serve external HTTP requests")
 		} else {
 			logrus.Info("Received graceful shutdown command for external HTTP client communicator")
@@ -112,7 +113,7 @@ func (hc *httpCommunicator) getRoutes() []helpers.Route {
 	}
 }
 
-// statusHandler is a simple HTTP responsewriter to display the current status to a requester
+// statusHandler is a simple HTTP responsewriter to display the current status to a requester.
 func (hc *httpCommunicator) statusHandler(rw http.ResponseWriter, r *http.Request) {
 	hc.wg.Add(1)
 	defer hc.wg.Done()
@@ -225,7 +226,7 @@ func (hc *httpCommunicator) listHandler(rw http.ResponseWriter, r *http.Request)
 
 	var listModel model.ListKeysModel
 	dec := json.NewDecoder(r.Body)
-	if err := dec.Decode(&listModel); err != nil && err != io.EOF {
+	if err := dec.Decode(&listModel); err != nil && !errors.Is(err, io.EOF) {
 		logrus.WithError(err).Error("Could not decode list request")
 		helpers.HTTPReplyJSON(rw, http.StatusBadRequest, model.SimpleResponse{
 			Result:  _statusOk,

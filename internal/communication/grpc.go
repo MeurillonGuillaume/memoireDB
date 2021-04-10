@@ -1,6 +1,6 @@
 package communication
 
-// grpcCommunicator is a NodeCommunicator which uses the gRPC technology as communication backbone
+// grpcCommunicator is a NodeCommunicator which uses the gRPC technology as communication backbone.
 type grpcCommunicator struct {
 	cfg *Config
 }

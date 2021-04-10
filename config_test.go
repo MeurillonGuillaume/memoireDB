@@ -13,7 +13,7 @@ const (
 	_myTestClusterName = "my-cluster"
 )
 
-// TestConfigLoading will check if configuration loading works as intended
+// TestConfigLoading will check if configuration loading works as intended.
 func TestConfigLoading(t *testing.T) {
 	var cfg Config
 	configLoader := multiconfig.New()

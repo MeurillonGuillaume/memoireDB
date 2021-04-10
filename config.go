@@ -7,14 +7,14 @@ import (
 	"github.com/koding/multiconfig"
 )
 
-// Config contains the configuration parameters used for memoireDB
+// Config contains the configuration parameters used for memoireDB.
 type Config struct {
 	Role                  role.Config
 	InternalCommunication internalCom.Config
 	ExternalCommunication externalCom.Config
 }
 
-// loadConfig will either load configuration parameters from ENV or crash out
+// loadConfig will either load configuration parameters from ENV or crash out.
 func loadConfig() (cfg Config, err error) {
 	configLoader := multiconfig.New()
 

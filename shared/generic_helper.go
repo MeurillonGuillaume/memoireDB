@@ -2,7 +2,7 @@ package shared
 
 import "context"
 
-// CombineChans will combine any number of input channels to a single output channel of interfaces
+// CombineChans will combine any number of input channels to a single output channel of interfaces.
 func CombineChans(ctx context.Context, chs ...<-chan interface{}) <-chan interface{} {
 	outStream := make(chan interface{})
 
@@ -18,7 +18,7 @@ func CombineChans(ctx context.Context, chs ...<-chan interface{}) <-chan interfa
 	return outStream
 }
 
-// forwardStream will loop over an input channel as long as its Context is alive and forward its values to an output channel
+// forwardStream will loop over an input channel as long as its Context is alive and forward its values to an output channel.
 func forwardStream(ctx context.Context, in <-chan interface{}, out chan<- interface{}) {
 	for {
 		select {

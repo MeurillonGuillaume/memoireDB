@@ -1,6 +1,6 @@
 package role
 
-// follower is a type of NodeRole which is assigned to listen and follow the leader
+// follower is a type of NodeRole which is assigned to listen and follow the leader.
 type follower struct {
 	cfg         *Config
 	currentRole RoleType

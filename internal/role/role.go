@@ -5,7 +5,7 @@ import (
 	"strings"
 )
 
-// NodeRole defines which functionality a Role should implement to create a functional cluster
+// NodeRole defines which functionality a Role should implement to create a functional cluster.
 type NodeRole interface {
 	// GetRole returns which role this node will fulfill in the cluster
 	GetRole() RoleType
@@ -15,7 +15,7 @@ type NodeRole interface {
 	GetName() string
 }
 
-// NewNodeWithRole creates a new NodeRole from given configuration
+// NewNodeWithRole creates a new NodeRole from given configuration.
 func NewNodeWithRole(cfg *Config) (nr NodeRole, err error) {
 	switch RoleType(strings.ToLower(cfg.InitialNodeRole)) {
 	case ClusterLeader:

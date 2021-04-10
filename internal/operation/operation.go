@@ -8,7 +8,7 @@ const (
 	_listKeysOperationName = "list keys"
 )
 
-// Operation is an interface which declares what a database operation should have as functionality
+// Operation is an interface which declares what a database operation should have as functionality.
 type Operation interface {
 	Start(ds datastore.Store)
 	Wait()

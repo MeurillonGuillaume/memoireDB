@@ -34,13 +34,13 @@ func TestHTTPRouter(t *testing.T) {
 	defer func() {
 		ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 		defer cancel()
-		if err := server.Shutdown(ctx); err != nil && err != context.Canceled {
+		if err := server.Shutdown(ctx); err != nil && !errors.Is(err, context.Canceled) {
 			assert.NoError(t, err)
 		}
 	}()
 
 	go func() {
-		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+		if err := server.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 			assert.NoError(t, err)
 		}
 	}()
@@ -49,8 +49,7 @@ func TestHTTPRouter(t *testing.T) {
 
 func testingHTTPHandler(rw http.ResponseWriter, r *http.Request) {
 	rw.WriteHeader(http.StatusOK)
-	_, err := rw.Write([]byte("Ok"))
-	if err != nil {
+	if _, err := rw.Write([]byte("Ok")); err != nil {
 		http.Error(rw, "Could not write status", http.StatusInternalServerError)
 	}
 }

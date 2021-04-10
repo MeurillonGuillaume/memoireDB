@@ -14,7 +14,7 @@ const (
 	_appJson     = "application/json"
 )
 
-// Route is an object used to create a HTTP routing object
+// Route is an object used to create a HTTP routing object.
 type Route struct {
 	Name    string
 	Path    string
@@ -22,7 +22,7 @@ type Route struct {
 	Handler http.HandlerFunc
 }
 
-// NewHTTPServer creates a new HTTP server with a router created from a slice of given HTTP routes
+// NewHTTPServer creates a new HTTP server with a router created from a slice of given HTTP routes.
 func NewHTTPServer(port int, routes []Route) *http.Server {
 	router := mux.NewRouter()
 	for _, route := range routes {
@@ -34,7 +34,7 @@ func NewHTTPServer(port int, routes []Route) *http.Server {
 	}
 }
 
-// addRouteLogging adds a route logline to a HTTP HandlerFunc
+// addRouteLogging adds a route logline to a HTTP HandlerFunc.
 func addRouteLogging(in http.HandlerFunc) http.HandlerFunc {
 	return func(rw http.ResponseWriter, r *http.Request) {
 		logrus.Infof("Received HTTP %s request at route %s from %s", r.Method, r.URL.Path, r.RemoteAddr)
@@ -42,7 +42,7 @@ func addRouteLogging(in http.HandlerFunc) http.HandlerFunc {
 	}
 }
 
-// HTTPReplyJSON attempts to reply to a HTTP ResponseWriter using an interface as JSON body, or sends an error response
+// HTTPReplyJSON attempts to reply to a HTTP ResponseWriter using an interface as JSON body, or sends an error response.
 func HTTPReplyJSON(rw http.ResponseWriter, statusCode int, body interface{}) {
 	rawReply, err := json.Marshal(body)
 	if err != nil {
