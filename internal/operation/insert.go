@@ -25,7 +25,7 @@ func NewInsertOperation(m model.InsertModel) Operation {
 func (iop *insertOperation) Start(ds datastore.Store) {
 	defer close(iop.done)
 
-	if result, err := ds.StoreKeyValue(iop.data.Key, iop.data.Value); err != nil {
+	if result, err := ds.StoreKeyValue(iop.data); err != nil {
 		iop.err = err
 	} else {
 		iop.result = result

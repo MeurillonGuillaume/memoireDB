@@ -25,7 +25,7 @@ func NewRetrieveOperation(m model.RetrieveModel) Operation {
 func (rop *retrieveOperation) Start(ds datastore.Store) {
 	defer close(rop.done)
 
-	if value, err := ds.LoadKeyValue(rop.data.Key); err != nil {
+	if value, err := ds.LoadKeyValue(rop.data); err != nil {
 		rop.err = err
 	} else {
 		rop.result = value

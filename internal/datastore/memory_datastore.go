@@ -3,6 +3,8 @@ package datastore
 import (
 	"strings"
 	"sync"
+
+	"github.com/MeurillonGuillaume/memoireDB/external/communication/model"
 )
 
 type memoryDatastore struct {
@@ -19,39 +21,39 @@ func newMemoryDatastore() Store {
 	}
 }
 
-func (md *memoryDatastore) LoadKeyValue(key string) (interface{}, error) {
+func (md *memoryDatastore) LoadKeyValue(m model.RetrieveModel) (interface{}, error) {
 	md.mux.RLock()
 	defer md.mux.RUnlock()
 
-	if r, ok := md.store[key]; !ok {
+	if r, ok := md.store[m.Key]; !ok {
 		return nil, ErrNoSuchKey
 	} else {
 		return r, nil
 	}
 }
 
-func (md *memoryDatastore) StoreKeyValue(key string, value interface{}) (interface{}, error) {
+func (md *memoryDatastore) StoreKeyValue(m model.InsertModel) (interface{}, error) {
 	md.mux.Lock()
 	defer md.mux.Unlock()
 
-	md.store[key] = value
-	return value, nil
+	md.store[m.Key] = m.Value
+	return m.Value, nil
 }
 
-func (md *memoryDatastore) ListKeys(prefix string) ([]string, error) {
+func (md *memoryDatastore) ListKeys(m model.ListKeysModel) ([]string, error) {
 	md.mux.RLock()
 	defer md.mux.RUnlock()
 
 	// Check if the prefix contains nothing but whitespace
-	if len(prefix) > 0 && len(strings.TrimSpace(prefix)) == 0 {
+	if len(m.Prefix) > 0 && len(strings.TrimSpace(m.Prefix)) == 0 {
 		return nil, ErrPrefixWhitespace
 	}
 
 	// Execute query
 	var result []string
-	if len(prefix) > 0 {
+	if len(m.Prefix) > 0 {
 		for key := range md.store {
-			if strings.HasPrefix(key, prefix) {
+			if strings.HasPrefix(key, m.Prefix) {
 				result = append(result, key)
 			}
 		}

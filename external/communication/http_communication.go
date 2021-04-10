@@ -223,7 +223,7 @@ func (hc *httpCommunicator) listHandler(rw http.ResponseWriter, r *http.Request)
 		}
 	}()
 
-	var listModel model.ListKeyModel
+	var listModel model.ListKeysModel
 	dec := json.NewDecoder(r.Body)
 	if err := dec.Decode(&listModel); err != nil && err != io.EOF {
 		logrus.WithError(err).Error("Could not decode list request")

@@ -6,7 +6,7 @@ import (
 )
 
 type listKeysOperation struct {
-	data model.ListKeyModel
+	data model.ListKeysModel
 	done chan struct{}
 
 	result interface{}
@@ -15,7 +15,7 @@ type listKeysOperation struct {
 
 var _ Operation = (*listKeysOperation)(nil)
 
-func NewListOperation(m model.ListKeyModel) Operation {
+func NewListOperation(m model.ListKeysModel) Operation {
 	return &listKeysOperation{
 		data: m,
 		done: make(chan struct{}, 1),
@@ -25,7 +25,7 @@ func NewListOperation(m model.ListKeyModel) Operation {
 func (lkop *listKeysOperation) Start(ds datastore.Store) {
 	defer close(lkop.done)
 
-	if result, err := ds.ListKeys(lkop.data.Prefix); err != nil {
+	if result, err := ds.ListKeys(lkop.data); err != nil {
 		lkop.err = err
 	} else {
 		lkop.result = result

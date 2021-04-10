@@ -12,8 +12,8 @@ type (
 		Key string `json:"key"`
 	}
 
-	// ListKeyModel is a model used to accept incoming List Key requests with optional prefixes
-	ListKeyModel struct {
+	// ListKeysModel is a model used to accept incoming List Key requests with optional prefixes
+	ListKeysModel struct {
 		Prefix string `json:"prefix,omitempty"`
 	}
 )
