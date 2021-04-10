@@ -7,6 +7,7 @@ import (
 
 	externalCommunication "github.com/MeurillonGuillaume/memoireDB/external/communication"
 	internalCommunication "github.com/MeurillonGuillaume/memoireDB/internal/communication"
+	"github.com/MeurillonGuillaume/memoireDB/internal/datastore"
 	"github.com/MeurillonGuillaume/memoireDB/internal/role"
 	"github.com/MeurillonGuillaume/memoireDB/shepherd"
 	"github.com/sirupsen/logrus"
@@ -45,7 +46,12 @@ func main() {
 		}
 	}()
 
-	shepherd, err := shepherd.NewShepherd(ic, ecs)
+	ds, err := datastore.NewDatastore()
+	if err != nil {
+		logrus.WithError(err).Fatal("Could not create internal datastore")
+	}
+
+	shepherd, err := shepherd.NewShepherd(ic, ecs, ds)
 	if err != nil {
 		logrus.WithError(err).Fatal("Could not create shepherd")
 	}

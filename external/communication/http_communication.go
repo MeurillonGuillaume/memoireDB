@@ -145,14 +145,14 @@ func (hc *httpCommunicator) putHandler(rw http.ResponseWriter, r *http.Request) 
 			Result:  _statusNok,
 			Message: "Insert failed",
 			Error:   err.Error(),
-			Took:    time.Since(start).Milliseconds(),
+			Took:    time.Since(start).Nanoseconds(),
 		})
 	} else {
 		helpers.HTTPReplyJSON(rw, http.StatusOK, model.SimpleResponse{
 			Result:  _statusOk,
 			Message: "Insert successful",
 			Value:   result,
-			Took:    time.Since(start).Milliseconds(),
+			Took:    time.Since(start).Nanoseconds(),
 		})
 	}
 }
@@ -183,15 +183,15 @@ func (hc *httpCommunicator) getHandler(rw http.ResponseWriter, r *http.Request) 
 	if result, err := op.Result(); err != nil {
 		helpers.HTTPReplyJSON(rw, http.StatusOK, model.SimpleResponse{
 			Result:  _statusOk,
-			Message: "Insert successful",
+			Message: "Retrieve failed",
 			Error:   err.Error(),
-			Took:    time.Since(start).Milliseconds(),
+			Took:    time.Since(start).Nanoseconds(),
 		})
 	} else {
 		helpers.HTTPReplyJSON(rw, http.StatusOK, model.RetrieveResponse{
 			Key:   retrieveRequest.Key,
 			Value: result,
-			Took:  time.Since(start).Milliseconds(),
+			Took:  time.Since(start).Nanoseconds(),
 		})
 	}
 }
