@@ -3,6 +3,7 @@ package communication
 import (
 	"context"
 	"fmt"
+	"io"
 	"strings"
 )
 
@@ -12,8 +13,7 @@ type ClientCommunicator interface {
 	Run(ctx context.Context)
 	// Operation will expose the internal channel for operations
 	Operation() <-chan interface{}
-	// Close will close the clientcommunicator and handle all operations in state
-	Close() error
+	io.Closer
 }
 
 // NewClientCommunicators will initialize all configured Client Communicators.

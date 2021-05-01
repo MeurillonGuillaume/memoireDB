@@ -3,11 +3,13 @@ package operation
 import (
 	"github.com/MeurillonGuillaume/memoireDB/external/communication/model"
 	"github.com/MeurillonGuillaume/memoireDB/internal/datastore"
+	"github.com/google/uuid"
 )
 
 type retrieveOperation struct {
 	data model.RetrieveModel
 	done chan struct{}
+	id   uuid.UUID
 
 	result interface{}
 	err    error
@@ -15,9 +17,10 @@ type retrieveOperation struct {
 
 var _ Operation = (*retrieveOperation)(nil)
 
-func NewRetrieveOperation(m model.RetrieveModel) Operation {
+func NewRetrieveOperation(id uuid.UUID, m model.RetrieveModel) Operation {
 	return &retrieveOperation{
 		data: m,
+		id:   id,
 		done: make(chan struct{}, 1),
 	}
 }

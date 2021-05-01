@@ -23,9 +23,10 @@ func newMemoryDatastore() Store {
 
 func (md *memoryDatastore) LoadKeyValue(m model.RetrieveModel) (interface{}, error) {
 	md.mux.RLock()
-	defer md.mux.RUnlock()
+	r, ok := md.store[m.Key]
+	md.mux.RUnlock()
 
-	if r, ok := md.store[m.Key]; !ok {
+	if !ok {
 		return nil, ErrNoSuchKey
 	} else {
 		return r, nil
@@ -34,16 +35,12 @@ func (md *memoryDatastore) LoadKeyValue(m model.RetrieveModel) (interface{}, err
 
 func (md *memoryDatastore) StoreKeyValue(m model.InsertModel) (interface{}, error) {
 	md.mux.Lock()
-	defer md.mux.Unlock()
-
 	md.store[m.Key] = m.Value
+	md.mux.Unlock()
 	return m.Value, nil
 }
 
 func (md *memoryDatastore) ListKeys(m model.ListKeysModel) ([]string, error) {
-	md.mux.RLock()
-	defer md.mux.RUnlock()
-
 	// Check if the prefix contains nothing but whitespace
 	if len(m.Prefix) > 0 && len(strings.TrimSpace(m.Prefix)) == 0 {
 		return nil, ErrPrefixWhitespace
@@ -51,6 +48,9 @@ func (md *memoryDatastore) ListKeys(m model.ListKeysModel) ([]string, error) {
 
 	// Execute query
 	var result []string
+	md.mux.RLock()
+	defer md.mux.RUnlock()
+
 	if len(m.Prefix) > 0 {
 		for key := range md.store {
 			if strings.HasPrefix(key, m.Prefix) {
@@ -67,4 +67,8 @@ func (md *memoryDatastore) ListKeys(m model.ListKeysModel) ([]string, error) {
 		return nil, ErrNoSuchKey
 	}
 	return result, nil
+}
+
+func (md *memoryDatastore) Close() error {
+	return nil
 }

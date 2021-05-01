@@ -3,11 +3,13 @@ package operation
 import (
 	"github.com/MeurillonGuillaume/memoireDB/external/communication/model"
 	"github.com/MeurillonGuillaume/memoireDB/internal/datastore"
+	"github.com/google/uuid"
 )
 
 type listKeysOperation struct {
 	data model.ListKeysModel
 	done chan struct{}
+	id   uuid.UUID
 
 	result interface{}
 	err    error
@@ -15,9 +17,10 @@ type listKeysOperation struct {
 
 var _ Operation = (*listKeysOperation)(nil)
 
-func NewListOperation(m model.ListKeysModel) Operation {
+func NewListOperation(id uuid.UUID, m model.ListKeysModel) Operation {
 	return &listKeysOperation{
 		data: m,
+		id:   id,
 		done: make(chan struct{}, 1),
 	}
 }

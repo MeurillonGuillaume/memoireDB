@@ -3,11 +3,13 @@ package operation
 import (
 	"github.com/MeurillonGuillaume/memoireDB/external/communication/model"
 	"github.com/MeurillonGuillaume/memoireDB/internal/datastore"
+	"github.com/google/uuid"
 )
 
 type insertOperation struct {
 	data model.InsertModel
 	done chan struct{}
+	id   uuid.UUID
 
 	result interface{}
 	err    error
@@ -15,9 +17,10 @@ type insertOperation struct {
 
 var _ Operation = (*insertOperation)(nil)
 
-func NewInsertOperation(m model.InsertModel) Operation {
+func NewInsertOperation(id uuid.UUID, m model.InsertModel) Operation {
 	return &insertOperation{
 		data: m,
+		id:   id,
 		done: make(chan struct{}, 1),
 	}
 }
