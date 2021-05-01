@@ -50,6 +50,11 @@ func main() {
 	if err != nil {
 		logrus.WithError(err).Fatal("Could not create internal datastore")
 	}
+	defer func() {
+		if err := ds.Close(); err != nil {
+			logrus.WithError(err).Error("Could not close datastore properly")
+		}
+	}()
 
 	shepherd, err := shepherd.NewShepherd(ic, ecs, ds)
 	if err != nil {
@@ -60,5 +65,5 @@ func main() {
 		logrus.WithError(err).Error("Could not execute shepherd")
 	}
 
-	logrus.Warn("Received exit signal")
+	logrus.WithField("signal", ctx.Err()).Warn("Received exit signal")
 }

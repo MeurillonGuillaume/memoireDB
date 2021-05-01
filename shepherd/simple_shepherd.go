@@ -33,11 +33,6 @@ func newSimpleShepherd(
 }
 
 func (ss *simpleShepherd) Run(ctx context.Context) error {
-	defer func() {
-		if err := ss.storage.Close(); err != nil {
-			logrus.WithError(err).Error("Could not properly close datastore")
-		}
-	}()
 	for _, ec := range ss.externalCommunicators {
 		go ec.Run(ctx)
 	}
