@@ -64,7 +64,7 @@ func (pd *persistedDatastore) LoadKeyValue(m model.RetrieveModel) (interface{}, 
 		return nil, ErrClosing
 	}
 
-	pd.wg.Add(2)
+	pd.wg.Add(1)
 	go pd.takeSnapshot()
 	defer pd.wg.Done()
 
@@ -76,7 +76,7 @@ func (pd *persistedDatastore) StoreKeyValue(m model.InsertModel) (interface{}, e
 		return nil, ErrClosing
 	}
 
-	pd.wg.Add(2)
+	pd.wg.Add(1)
 	go pd.takeSnapshot()
 	defer pd.wg.Done()
 
@@ -105,6 +105,7 @@ func (pd *persistedDatastore) Close() error {
 func (pd *persistedDatastore) restoreFromLatestSnapshot() {}
 
 func (pd *persistedDatastore) takeSnapshot() {
+	pd.wg.Add(1)
 	defer pd.wg.Done()
 
 	pd.memStore.mux.Lock()
