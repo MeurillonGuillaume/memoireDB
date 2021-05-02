@@ -16,4 +16,4 @@ jobs:
         uses: golangci/golangci-lint-action@v2
         with:
           version: latest
-          args: --enable=wastedassign,whitespace,predeclared,nestif,nakedret,importas,ifshort,gomnd,goimports,prealloc,misspell,goconst,bodyclose,unconvert,asciicheck,errorlint,gocritic,godot --sort-results --max-issues-per-linter=0 --max-same-issues=0
+          args: --enable=wastedassign,whitespace,predeclared,nestif,nakedret,importas,ifshort,gomnd,goimports,prealloc,misspell,goconst,bodyclose,unconvert,asciicheck,errorlint,gocritic,godot --out-format=line-number --sort-results --max-issues-per-linter=0 --max-same-issues=0
