@@ -4,6 +4,12 @@ import (
 	"io"
 
 	"github.com/MeurillonGuillaume/memoireDB/external/communication/model"
+	"github.com/MeurillonGuillaume/memoireDB/shared"
+)
+
+const (
+	TypeMemoryDatastore    = "memory"
+	TypePersistedDatastore = "persisted"
 )
 
 // Store is an interface declaring the functionality of a datastore for MemoireDB.
@@ -18,6 +24,13 @@ type Store interface {
 	io.Closer
 }
 
-func NewDatastore() (Store, error) {
-	return newMemoryDatastore(), nil
+func NewDatastore(cfg Config) (Store, error) {
+	switch cfg.Type {
+	case TypeMemoryDatastore:
+		return newMemoryDatastore(), nil
+	case TypePersistedDatastore:
+		return newPersistedDatastore()
+	default:
+	}
+	return nil, shared.ErrNoSuchType
 }

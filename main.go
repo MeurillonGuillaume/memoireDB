@@ -46,7 +46,7 @@ func main() {
 		}
 	}()
 
-	ds, err := datastore.NewDatastore()
+	ds, err := datastore.NewDatastore(cfg.Datastore)
 	if err != nil {
 		logrus.WithError(err).Fatal("Could not create internal datastore")
 	}
