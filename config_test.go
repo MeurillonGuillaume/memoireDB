@@ -22,6 +22,7 @@ func TestConfigLoading(t *testing.T) {
 		"CONFIG_ROLE_NODENAME":        _myTestNodeName,
 		"CONFIG_ROLE_CLUSTERNAME":     _myTestClusterName,
 		"CONFIG_ROLE_INITIALNODEROLE": "leader",
+		"CONFIG_DATASTORE_TYPE":       "memory",
 	})
 	assert.NoError(t, err)
 	assert.Nil(t, configLoader.Load(&cfg))
