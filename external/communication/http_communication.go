@@ -10,11 +10,11 @@ import (
 	"sync"
 	"time"
 
+	"github.com/MeurillonGuillaume/memoireDB/config"
 	"github.com/MeurillonGuillaume/memoireDB/external/communication/helpers"
 	"github.com/MeurillonGuillaume/memoireDB/external/communication/model"
 	"github.com/MeurillonGuillaume/memoireDB/internal/operation"
 	"github.com/google/uuid"
-	"github.com/koding/multiconfig"
 	"github.com/sirupsen/logrus"
 )
 
@@ -40,13 +40,7 @@ var _ ClientCommunicator = (*httpCommunicator)(nil)
 
 func newHTTPCommunicator() (cc ClientCommunicator, err error) {
 	var cfg HttpCommunicatorConfig
-	configLoader := multiconfig.New()
-
-	if err = configLoader.Load(&cfg); err != nil {
-		return
-	}
-
-	if err = configLoader.Validate(&cfg); err != nil {
+	if err = config.LoadFromEnv(config.PrefixMemoireDB, &cfg); err != nil {
 		return
 	}
 

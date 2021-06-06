@@ -9,8 +9,8 @@ import (
 	"sync"
 	"time"
 
+	"github.com/MeurillonGuillaume/memoireDB/config"
 	"github.com/MeurillonGuillaume/memoireDB/external/communication/model"
-	"github.com/koding/multiconfig"
 	"github.com/sirupsen/logrus"
 	"go.uber.org/atomic"
 )
@@ -33,13 +33,8 @@ var _ Store = (*persistedDatastore)(nil)
 
 func newPersistedDatastore() (s Store, err error) {
 	var cfg PersistenceConfig
-	configLoader := multiconfig.New()
-	if err = configLoader.Load(&cfg); err != nil {
-		return
-	}
-
-	if err = configLoader.Validate(&cfg); err != nil {
-		return
+	if err := config.LoadFromEnv(config.PrefixMemoireDB, &cfg); err != nil {
+		return nil, err
 	}
 
 	if cfg.Retention < 1 {
