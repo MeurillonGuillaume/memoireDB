@@ -45,7 +45,7 @@ func LoadFromEnv(prefix string, cfg interface{}) error {
 	return nil
 }
 
-// getInterfaceName will return the name of the given interface
+// getInterfaceName will return the name of the given interface.
 func getInterfaceName(i interface{}) string {
 	t := reflect.TypeOf(i)
 	for t.Kind() == reflect.Ptr {
@@ -109,5 +109,4 @@ func logSubLevels(rv reflect.Value, level int) {
 
 		logrus.Infof("%s%s%s %s: %v", strings.Repeat(_tab, level+1), _childArrow, field.Name, meta, value)
 	}
-
 }
