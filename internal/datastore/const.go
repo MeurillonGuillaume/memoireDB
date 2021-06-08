@@ -8,7 +8,3 @@ var (
 
 	ErrClosing = errors.New("datastore could not do operation since it's closing")
 )
-
-const (
-	_snapExt = ".snap"
-)

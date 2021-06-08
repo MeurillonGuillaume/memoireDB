@@ -89,7 +89,6 @@ func logSubLevels(rv reflect.Value, level int) {
 
 		// Set base metadata
 		meta := fmt.Sprintf("(type: %v", field.Type)
-
 		// Fetch required
 		if value := field.Tag.Get(_fieldRequired); value != "" {
 			meta += fmt.Sprintf(", required: %s", value)
@@ -104,7 +103,6 @@ func logSubLevels(rv reflect.Value, level int) {
 		if value := field.Tag.Get(_fieldUsage); value != "" {
 			meta += fmt.Sprintf(", description: %s", value)
 		}
-
 		meta += ")"
 
 		logrus.Infof("%s%s%s %s: %v", strings.Repeat(_tab, level+1), _childArrow, field.Name, meta, value)

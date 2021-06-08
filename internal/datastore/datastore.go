@@ -8,8 +8,8 @@ import (
 )
 
 const (
-	TypeMemoryDatastore    = "memory"
-	TypePersistedDatastore = "persisted"
+	TypeMemoryDatastore = "memory"
+	TypeWalDatastore    = "write-ahead-log"
 )
 
 // Store is an interface declaring the functionality of a datastore for MemoireDB.
@@ -28,8 +28,8 @@ func NewDatastore(cfg Config) (Store, error) {
 	switch cfg.Type {
 	case TypeMemoryDatastore:
 		return newMemoryDatastore(), nil
-	case TypePersistedDatastore:
-		return newPersistedDatastore()
+	case TypeWalDatastore:
+		return newWalDatastore()
 	default:
 	}
 	return nil, shared.ErrNoSuchType

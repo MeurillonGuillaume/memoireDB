@@ -1,6 +1,7 @@
 package datastore
 
 import (
+	"sort"
 	"strings"
 	"sync"
 
@@ -66,6 +67,7 @@ func (md *memoryDatastore) ListKeys(m model.ListKeysModel) ([]string, error) {
 	if len(result) < 1 {
 		return nil, ErrNoSuchKey
 	}
+	sort.Strings(result)
 	return result, nil
 }
 
