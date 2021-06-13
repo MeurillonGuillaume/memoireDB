@@ -9,22 +9,22 @@ import (
 )
 
 type memoryDatastore struct {
-	store map[string]interface{}
-	mux   sync.RWMutex
+	storage map[string]interface{}
+	mux     sync.RWMutex
 }
 
 var _ Store = (*memoryDatastore)(nil)
 
 func newMemoryDatastore() Store {
 	return &memoryDatastore{
-		store: make(map[string]interface{}),
-		mux:   sync.RWMutex{},
+		storage: make(map[string]interface{}),
+		mux:     sync.RWMutex{},
 	}
 }
 
 func (md *memoryDatastore) LoadKeyValue(m model.RetrieveModel) (interface{}, error) {
 	md.mux.RLock()
-	r, ok := md.store[m.Key]
+	r, ok := md.storage[m.Key]
 	md.mux.RUnlock()
 
 	if !ok {
@@ -36,7 +36,7 @@ func (md *memoryDatastore) LoadKeyValue(m model.RetrieveModel) (interface{}, err
 
 func (md *memoryDatastore) StoreKeyValue(m model.InsertModel) (interface{}, error) {
 	md.mux.Lock()
-	md.store[m.Key] = m.Value
+	md.storage[m.Key] = m.Value
 	md.mux.Unlock()
 	return m.Value, nil
 }
@@ -53,13 +53,13 @@ func (md *memoryDatastore) ListKeys(m model.ListKeysModel) ([]string, error) {
 	defer md.mux.RUnlock()
 
 	if len(m.Prefix) > 0 {
-		for key := range md.store {
+		for key := range md.storage {
 			if strings.HasPrefix(key, m.Prefix) {
 				result = append(result, key)
 			}
 		}
 	} else {
-		for key := range md.store {
+		for key := range md.storage {
 			result = append(result, key)
 		}
 	}

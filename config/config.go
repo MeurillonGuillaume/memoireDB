@@ -20,14 +20,14 @@ const (
 	_fieldSecret   = "secret"
 	_fieldDefault  = "default"
 	_fieldRequired = "required"
-	_fieldUsage    = "flagUsage"
+	_fieldHelp     = "help"
 )
 
 // LoadFromEnv will load configuration parameters with a specific prefix from the ENV variables and attempt to Load & Validate these parameters based on the given configuration interface.
 // The ENV prefix = given prefix string + "_" + the name of the configuration struct.
 func LoadFromEnv(prefix string, cfg interface{}) error {
 	cfgLoader := multiconfig.New()
-	cfgLoader.Loader = &multiconfig.EnvironmentLoader{
+	cfgLoader.Loader = &EnvLoader{
 		Prefix: prefix + "_" + getInterfaceName(cfg),
 	}
 
@@ -99,8 +99,8 @@ func logSubLevels(rv reflect.Value, level int) {
 			meta += fmt.Sprintf(", default: %s", value)
 		}
 
-		// Fetch flagUsage if any
-		if value := field.Tag.Get(_fieldUsage); value != "" {
+		// Fetch help if any
+		if value := field.Tag.Get(_fieldHelp); value != "" {
 			meta += fmt.Sprintf(", description: %s", value)
 		}
 		meta += ")"

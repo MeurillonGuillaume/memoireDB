@@ -21,7 +21,7 @@ import (
 type (
 	// HttpCommunicatorConfig contains configuration parameters to set up a HTTP server.
 	HttpCommunicatorConfig struct {
-		Port int `default:"8080" flagUsage:"Which port should be used to listen for incoming HTTP requests"`
+		Port int `default:"8080" help:"Which port should be used to listen for incoming HTTP requests"`
 	}
 	httpCommunicator struct {
 		cfg            *HttpCommunicatorConfig
