@@ -26,7 +26,7 @@ type EnvLoader struct {
 
 var _ multiconfig.Loader = (*EnvLoader)(nil)
 
-// Load loads the source into the config defined by struct s
+// Load loads the source into the config defined by structs.
 func (e *EnvLoader) Load(s interface{}) error {
 	strct := structs.New(s)
 	strctMap := strct.Map()
@@ -52,13 +52,12 @@ func (e *EnvLoader) getPrefix(s *structs.Struct) string {
 }
 
 // processField gets leading name for the env variable and combines the current
-// field's name and generates environment variable names recursively
+// field's name and generates environment variable names recursively.
 func (e *EnvLoader) processField(prefix string, field *structs.Field, name string, strctMap interface{}) error {
 	fieldName := e.generateFieldName(prefix, name)
 
-	strctMap, ok := strctMap.(map[string]interface{})
-	if ok {
-		for key, val := range strctMap.(map[string]interface{}) {
+	if strctMap, ok := strctMap.(map[string]interface{}); ok {
+		for key, val := range strctMap {
 			field := field.Field(key)
 
 			if err := e.processField(fieldName, field, key, val); err != nil {
@@ -101,7 +100,7 @@ func (e *EnvLoader) PrintEnvs(s interface{}) {
 	}
 }
 
-// printField prints the field of the config struct for the flag.Usage
+// printField prints the field of the config struct for the flag.Usage.
 func (e *EnvLoader) printField(prefix string, field *structs.Field, name string, strctMap interface{}) {
 	fieldName := e.generateFieldName(prefix, name)
 
@@ -122,8 +121,7 @@ func (e *EnvLoader) printField(prefix string, field *structs.Field, name string,
 	}
 }
 
-// generateFieldName generates the field name combined with the prefix and the
-// struct's field name
+// generateFieldName generates the field name combined with the prefix and the struct's field name.
 func (e *EnvLoader) generateFieldName(prefix string, name string) string {
 	fieldName := strings.ToUpper(name)
 	return strings.ToUpper(prefix) + "_" + fieldName
@@ -133,8 +131,7 @@ func (e *EnvLoader) generateFieldName(prefix string, name string) string {
 // string value in a sane way and is usefulf or environment variables or flags
 // which are by nature in string types.
 func fieldSet(field *structs.Field, v string) error {
-	switch f := field.Value().(type) {
-	case flag.Value:
+	if f, ok := field.Value().(flag.Value); ok {
 		if v := reflect.ValueOf(field.Value()); v.IsNil() {
 			typ := v.Type()
 			if typ.Kind() == reflect.Ptr {
